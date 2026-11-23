@@ -3,6 +3,12 @@ export
 
 export PROJECT_ROOT=$(shell pwd)
 
+chronos-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run cmd/chronos/main.go
+
 docker-up:
 	@docker compose up -d chronos-postgres
 
@@ -11,14 +17,14 @@ docker-down:
 
 port-forward-up:
 	@docker compose up -d port-forwarder
-
+ 
 port-forward-down:
 	@docker compose down port-forwarder
 
 cleanup-db: 
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
-		docker compose down chronos-postgres && \
+		docker compose down chronos-postgres port-forwarder && \
 		rm -rf out/pgdata && \
 		echo "Файлы окружения очищены"; \
 	else \
@@ -35,7 +41,6 @@ migrate-create:
 		-ext sql \
 		-dir /migrations \
 		-seq "$(seq)"
- 
 migrate-up:
 	@make migrate-action action=up
 

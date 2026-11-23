@@ -3,16 +3,15 @@ CREATE SCHEMA chronos;
 CREATE TABLE chronos.users (
     id              SERIAL        PRIMARY KEY,
     version         BIGINT        NOT NULL DEFAULT 1,
-    full_name       VARCHAR(100)  NOT NULL CHECK (char_length(full_name) BETWEEN 3 AND 100),
+    name       VARCHAR(100)  NOT NULL CHECK (char_length(name) BETWEEN 3 AND 100),
 
-    email           VARCHAR(255)  NOT NULL UNIQUE,
-    phone_number    VARCHAR(15)   CHECK (phone_number ~ '^\+[0-9]{9,14}$'),  
+    email           VARCHAR(255)  NOT NULL UNIQUE,  
     password_hash   VARCHAR(255)  NOT NULL,
 
     role            VARCHAR(20)   NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
 
     plan            VARCHAR(30)   NULL,  
-    status          VARCHAR(20)   NULL CHECK (status IN ('active', 'blocked', 'pending-payment') OR status IS NULL),
+    status          VARCHAR(20)   NOT NULL DEFAULT 'pending-payment' CHECK (status IN ('active', 'blocked', 'pending-payment')),
 
     created_at      TIMESTAMPTZ   NOT NULL,
     updated_at      TIMESTAMPTZ   NOT NULL
